@@ -1,3 +1,5 @@
+{# render fields #}
+{% from 'form-helper.html' import rendersFields %}
 {% extends "before-login.html" %}
 
 {% block title %}
@@ -7,40 +9,15 @@
 {% block content %}
 <h1>home page</h1>
 <form action="{{ url_for('index') }}" method="POST">
-<div>
-    {{ form.username(class_='form-contol',placeholder='username',autocomplete='off',autofocus=False) }}
-<ul>
-    {% for error in form.username.errors %}
-    <li>
-        {{ error }}
-    </li>
-    {% endfor %}
-</ul>
-</div>
 
-<div>
-    {{ form.password(class_='form-contol',placeholder='password') }}
-<ul>
-    {% for error in form.password.errors %}
-    <li>
-        {{ error }}
-    </li>
-    {% endfor %}
-</ul>
-</div>
-<div>
-    {{ form.confirm_password(class_='form-contol',placeholder='confirm_password') }}
-<ul>
-    {% for error in form.confirm_password.errors %}
-    <li>
-        {{ error }}
-    </li>
-    {% endfor %}
-</ul>
-</div>
-<div>
-    {{ form.submit }}
-</div>
+
+
+{{ rendersFields(form.username,'username',autocomplete=False,autofocus=True) }}
+{{ rendersFields(form.password,'password') }}
+{{ rendersFields(form.confirm_password,'confirm_password') }}
+{{ form.submit }}
+
 {{ form.csrf_token }}
+
 </form>
 {% endblock %}
