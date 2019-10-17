@@ -14,3 +14,7 @@ class RegistrationForm(FlaskForm):
         InputRequired(message='password required'),
         EqualTo('password',message='passwords must match')])
     submit=SubmitField('submit')
+
+
+    def validator_username(self,username):
+        user_d=User.query.filter_by(username=username.data).first()
