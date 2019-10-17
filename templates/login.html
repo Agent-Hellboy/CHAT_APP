@@ -1,0 +1,23 @@
+{# render fields #}
+{% from 'form-helper.html' import rendersFields %}
+{% extends "before-login.html" %}
+
+{% block title %}
+  login
+{% endblock %}
+
+{% block content %}
+<h1>home page</h1>
+<form action="{{ url_for('login') }}" method="POST">
+
+
+
+{{ rendersFields(form.username,'username',autocomplete=False,autofocus=True) }}
+{{ rendersFields(form.password,'password') }}
+
+{{ form.submit }}
+
+{{ form.csrf_token }}
+
+</form>
+{% endblock %}

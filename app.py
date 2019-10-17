@@ -26,7 +26,18 @@ def index():
         return "inserted successfully"
     return render_template('index.html',form=form)
 
-
+@app.route('/login',methods=['GET','POST'])
+def login():
+    form=LoginForm()
+    if form.validate_on_submit():
+        username=form.username.data
+        password=form.password.data
+        user_d=User.query.filter_by(username=username).first()
+        print(user_d.username)
+        print(user_d.password)
+        if(user_d.password==password):
+            return "you are allowed to login"
+    return render_template('login.html',form=form)
 
 
 
