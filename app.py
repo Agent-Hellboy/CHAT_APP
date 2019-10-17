@@ -34,11 +34,7 @@ def index():
 def login():
     form=LoginForm()
     if form.validate_on_submit():
-        username=form.username.data
-        password=form.password.data
-        user_d=User.query.filter_by(username=username).first()
-        if(user_d.password==password):
-            return "you can login"
+        return "you can login"
     return render_template('login.html',form=form)
 
 
