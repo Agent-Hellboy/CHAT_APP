@@ -1,6 +1,7 @@
-from flask import Flask,render_template
+from flask import Flask,render_template,redirect,url_for
 from wt_forms import *
 from models import *
+
 
 
 #app config
@@ -14,6 +15,7 @@ db=SQLAlchemy(app)
 
 
 
+"""registration route"""
 @app.route('/',methods=['GET','POST'])
 def index():
     form=RegistrationForm()
@@ -23,9 +25,11 @@ def index():
         user1=User(username=username,password=password)
         db.session.add(user1)
         db.session.commit()
-        return "inserted successfully"
+        return redirect(url_for('login'))
     return render_template('index.html',form=form)
 
+
+"""login route"""
 @app.route('/login',methods=['GET','POST'])
 def login():
     form=LoginForm()
@@ -33,8 +37,6 @@ def login():
         username=form.username.data
         password=form.password.data
         user_d=User.query.filter_by(username=username).first()
-        print(user_d.username)
-        print(user_d.password)
         if(user_d.password==password):
             return "you are allowed to login"
     return render_template('login.html',form=form)
