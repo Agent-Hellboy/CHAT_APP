@@ -38,7 +38,7 @@ def login():
         password=form.password.data
         user_d=User.query.filter_by(username=username).first()
         if(user_d.password==password):
-            return "you are allowed to login"
+            return "you can login"
     return render_template('login.html',form=form)
 
 
