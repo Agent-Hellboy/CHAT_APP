@@ -16,6 +16,14 @@ db=SQLAlchemy(app)
 #config
 login_manager = LoginManager()
 login_manager.init_app(app)
+login_manager.login_view = "users.login"
+login_manager.login_message = u"Bonvolu ensaluti por uzi tiun paĝon."
+login_manager.login_message_category = "info"
+
+@login_manager.unauthorized_handler
+def unauthorized():
+    # do stuff
+    return "please login to enter into chat room"
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -49,17 +57,18 @@ def login():
     return render_template('login.html',form=form)
 
 @app.route('/after_login',methods=['GET'])
-#@login_required
+@login_required
 def after_login():
     """"""
-    if not current_user.is_authenticated:
-        return "please login to enter into chat room"
+    #if not current_user.is_authenticated:
+        #return "please login to enter into chat room"
     return render_template('after_login.html')
 
 @app.route("/logout")
 @login_required
 def logout():
     logout_user()
+    return "you are now logged out from session"
 
 if(__name__=='__main__'):
     app.run(debug=True,port=9000)
