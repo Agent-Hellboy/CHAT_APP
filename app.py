@@ -44,6 +44,12 @@ def index():
         return redirect(url_for('login'))
     return render_template('index.html',form=form)
 
+def login_fresh():
+    '''
+    This returns ``True`` if the current login is fresh.
+    '''
+    pass
+
 
 """login route"""
 @app.route('/login',methods=['GET','POST'])
@@ -52,9 +58,15 @@ def login():
     if form.validate_on_submit():
         user=User.query.filter_by(username=form.username.data).first()
         login_user(user)
+        """fresh login"""
+        if(login_fresh()):
+            return "hope you like it"
         if(current_user.is_authenticated):
             return redirect(url_for('after_login'))
     return render_template('login.html',form=form)
+
+
+
 
 @app.route('/after_login',methods=['GET'])
 @login_required
@@ -63,6 +75,9 @@ def after_login():
     #if not current_user.is_authenticated:
         #return "please login to enter into chat room"
     return render_template('after_login.html')
+
+
+
 
 @app.route("/logout")
 @login_required
