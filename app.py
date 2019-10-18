@@ -1,7 +1,7 @@
 from flask import Flask,render_template,redirect,url_for
 from wt_forms import *
 from models import *
-
+from passlib.hash import pbkdf2_sha256
 
 
 #app config
@@ -22,7 +22,8 @@ def index():
     if form.validate_on_submit():
         username=form.username.data
         password=form.password.data
-        user1=User(username=username,password=password)
+        hash = pbkdf2_sha256.hash(password)
+        user1=User(username=username,password=hash)
         db.session.add(user1)
         db.session.commit()
         return redirect(url_for('login'))
@@ -34,7 +35,7 @@ def index():
 def login():
     form=LoginForm()
     if form.validate_on_submit():
-        return "you can login"
+        return "you are now logged in"
     return render_template('login.html',form=form)
 
 
