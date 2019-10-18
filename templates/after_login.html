@@ -5,6 +5,9 @@
     <title>{% block title %}{% endblock %}-chat app</title>
 </head>
 <body>
-<h1>Protected page</h1>
+{% if current_user.is_authenticated %}
+<h2>Hi {{ current_user.username }}</h2>
+{% endif %}
+<h3>you are now in chat room</h3>
 </body>
 </html>

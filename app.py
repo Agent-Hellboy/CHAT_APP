@@ -49,7 +49,11 @@ def login():
     return render_template('login.html',form=form)
 
 @app.route('/after_login',methods=['GET'])
+#@login_required
 def after_login():
+    """"""
+    if not current_user.is_authenticated:
+        return "please login to enter into chat room"
     return render_template('after_login.html')
 
 @app.route("/logout")
