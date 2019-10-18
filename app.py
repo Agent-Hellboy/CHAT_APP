@@ -2,7 +2,7 @@ from flask import Flask,render_template,redirect,url_for
 from wt_forms import *
 from models import *
 from passlib.hash import pbkdf2_sha256
-
+from flask_login import LoginManager,login_user,logout_user,login_required,current_user
 
 #app config
 app=Flask(__name__)
@@ -13,6 +13,13 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=True
 
 db=SQLAlchemy(app)
 
+#config
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(user_id)
 
 
 """registration route"""
@@ -35,10 +42,20 @@ def index():
 def login():
     form=LoginForm()
     if form.validate_on_submit():
-        return "you are now logged in"
+        user=User.query.filter_by(username=form.username.data).first()
+        login_user(user)
+        if(current_user.is_authenticated):
+            return redirect(url_for('after_login'))
     return render_template('login.html',form=form)
 
+@app.route('/after_login',methods=['GET'])
+def after_login():
+    return render_template('after_login.html')
 
+@app.route("/logout")
+@login_required
+def logout():
+    logout_user()
 
 if(__name__=='__main__'):
     app.run(debug=True,port=9000)
