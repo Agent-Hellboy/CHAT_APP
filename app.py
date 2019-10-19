@@ -1,15 +1,17 @@
-from flask import Flask,render_template,redirect,url_for
+from flask import Flask,render_template,redirect,url_for,flash
 from wt_forms import *
 from models import *
 from passlib.hash import pbkdf2_sha256
 from flask_login import LoginManager,login_user,logout_user,login_required,current_user
+from flask_socketio import SocketIO,send
 
 #app config
 app=Flask(__name__)
 
 app.config['SECRET_KEY']='secret'
-app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///site.db'
+app.config['SQLALCHEMY_DATABASE_URI']='postgres://yeeuhnjesvgfbb:6e58599eb9da0288df9cbec9e29fdcb7b5373b55d712f892dd7298de389cdcc5@ec2-174-129-210-249.compute-1.amazonaws.com:5432/d9709ll1mlvkn7'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=True
+socketio = SocketIO(app)
 
 db=SQLAlchemy(app)
 
@@ -34,6 +36,7 @@ def load_user(user_id):
 @app.route('/',methods=['GET','POST'])
 def index():
     form=RegistrationForm()
+    #add username to the DB if validation succeed
     if form.validate_on_submit():
         username=form.username.data
         password=form.password.data
@@ -60,12 +63,18 @@ def login():
         login_user(user)
         """fresh login"""
         if(login_fresh()):
-            return "hope you like it"
-        if(current_user.is_authenticated):
-            return redirect(url_for('after_login'))
+            flash('hope you like this','success')
+            return redirect(url_for('first_timer'))
+        elif(current_user.is_authenticated):
+            flash('you are now logged in successfully','success')
+            print(user.username)
+            return redirect(url_for('chatroom'))
     return render_template('login.html',form=form)
 
-
+@app.route('/first_timer',methods=['GET'])
+@login_required
+def first_time():
+    return "<h2>welcome first timer</h2>"
 
 
 @app.route('/after_login',methods=['GET'])
@@ -76,14 +85,28 @@ def after_login():
         #return "please login to enter into chat room"
     return render_template('after_login.html')
 
+@app.route('/chatroom',methods=['GET'])
+@login_required
+def chatroom():
+    """"""
+    #if not current_user.is_authenticated:
+        #return "please login to enter into chat room"
+    return render_template('chatroom.html',username=current_user.username)
 
+
+@socketio.on( 'my event' )
+def handle_my_custom_event( json ):
+  print( 'recived my event: ' + str( json ) )
+  socketio.emit( 'my response', json, callback=messageRecived )
 
 
 @app.route("/logout")
 @login_required
 def logout():
     logout_user()
-    return "you are now logged out from session"
+    flash('you are now logged out successfully','success')
+    return redirect(url_for('login'))
 
 if(__name__=='__main__'):
-    app.run(debug=True,port=9000)
+    socketio.run(app,debug=True)
+    #app.run(debug=True,port=9000)
